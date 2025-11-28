@@ -1,5 +1,5 @@
 /* ---------------------------------------------------- */
-/* CSS 樣式區域 (style.css) - 包含手機滿版修正 */
+/* CSS 樣式區域 (style.css) - 已修正手機滿版及日曆溢出 */
 /* ---------------------------------------------------- */
 
 :root {
@@ -82,7 +82,8 @@ html, body {
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
+    /* 修正：將間距從 5px 縮小至 2px，以確保在窄小的手機螢幕上能滿版顯示 */
+    gap: 2px; 
     text-align: center;
 }
 
