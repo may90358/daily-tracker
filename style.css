@@ -51,7 +51,6 @@ body {
     /* 確保日曆容器能夠居中對齊 */
     margin-bottom: 25px;
     padding: 0; /* 讓日曆佔用 app-container 的全部寬度 */
-    background-color: var(--background-color); /* 可選擇性添加背景色 */
     border-radius: 12px; /* 確保圓角效果 */
     padding: 0 10px 10px 10px; /* 稍微縮小日曆容器內邊距 */
 }
