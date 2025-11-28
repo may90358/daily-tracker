@@ -1,6 +1,11 @@
 /* ---------------------------------------------------- */
-/* CSS 樣式區域 */
+/* CSS 樣式區域 (已修正手機滿版顯示) */
 /* ---------------------------------------------------- */
+
+/* 1. 關鍵修正：全域 Box-Sizing */
+* {
+    box-sizing: border-box;
+}
 
 :root {
     --primary-color: #007AFF;
@@ -20,19 +25,14 @@
     --morandi-bg-reading: #F3D2E0; /* 粉色 */
 }
 
-/* 關鍵修正：全域 Box-Sizing 確保 padding 不會造成溢出 */
-* {
-    box-sizing: border-box;
-}
-
 body {
     font-family: var(--font-family);
     background-color: #F8F8F8;
     color: var(--text-color-dark);
     margin: 0;
-    /* 滿版修正後的 body 邊距 */
-    padding: 0 0 80px;
-    max-width: none;
+    /* 修正: 讓 body 左右 padding 為 0，將 padding 移至 app-container */
+    padding: 0 0 80px; 
+    max-width: none; /* 移除最大寬度限制 */
     margin-left: auto;
     margin-right: auto;
     line-height: 1.6;
@@ -46,14 +46,14 @@ body {
     padding: 0 20px; /* 確保內容左右有 20px 邊距 */
 }
 
-
 /* ------------------ 日曆/日期選中樣式 ------------------ */
 #calendar-view {
     /* 確保日曆容器能夠居中對齊 */
     margin-bottom: 25px;
+    padding: 0; /* 讓日曆佔用 app-container 的全部寬度 */
+    background-color: var(--background-color); /* 可選擇性添加背景色 */
+    border-radius: 12px; /* 確保圓角效果 */
     padding: 0 10px 10px 10px; /* 稍微縮小日曆容器內邊距 */
-    background-color: var(--background-color);
-    border-radius: 12px;
 }
 
 .calendar-header-nav {
@@ -77,7 +77,7 @@ body {
 
 .nav-icon {
     cursor: pointer;
-    font-size: 24px !important; /* 使用 Material Icons 時確保大小 */
+    font-size: 24px !important; 
     color: var(--text-color-dark);
     padding: 5px;
     border-radius: 50%;
@@ -88,13 +88,13 @@ body {
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    /* 滿版修正：極限壓縮間距 */
+    /* 2. 關鍵修正：極限壓縮間距，確保滿版 */
     gap: 1px; 
     text-align: center;
 }
 
 /* 日期內容的容器，需要佔用全部 7 列 */
-#calendar-days {
+#dynamic-calendar-days { /* 修正為 main.js 中使用的 ID */
     display: contents;
 }
 
@@ -109,17 +109,14 @@ body {
 .day-label:nth-child(7) { color: #34AADC; } /* 週六藍色 */
 
 .day-cell,
-.day-cell.inactive { /* 確保 inactive 樣式也參與 grid 排列 */
+.day-cell.inactive { 
     position: relative;
     aspect-ratio: 1 / 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    
-    /* ***** 關鍵修正：增加垂直 padding (高度) ***** */
-    padding: 10px 5px; 
-    /* *************************************** */
+    /* 樣式恢復: 使用原始的 padding 和高度 */
+    /* 移除 display: flex, flex-direction, justify-content, align-items 回歸區塊佈局 */
+    padding: 8px 0; 
+    height: 30px; 
+    text-align: center;
     
     border-radius: 8px;
     font-size: 16px;
@@ -130,9 +127,12 @@ body {
 }
 
 /* 確保日期的數字在頂部 */
-.day-cell > div:first-child {
+/* 由於已移除 flex，此選擇器可能需要調整或移除 */
+.day-cell > div:first-child { 
     font-size: 16px;
     font-weight: 500;
+    /* 確保文字不會被 padding 影響太多 */
+    line-height: 1.2; 
 }
 
 /* ------------------- 今天日期樣式：背景透明 + 橘色外框 ------------------- */
@@ -140,8 +140,8 @@ body {
     background-color: transparent;
     border: 2px solid var(--highlight-color);
     border-radius: 8px;
-    /* 修正: 配合 2px border，將 padding 設為 8px 5px，維持視覺高度一致 */
-    padding: 8px 5px; 
+    padding: 5px 0; /* 調整 padding 配合 border */
+    height: 34px; /* 增加高度來容納 border */
 }
 
 .day-cell.today div:first-child {
@@ -174,8 +174,12 @@ body {
     justify-content: center;
     align-items: center;
     margin-top: 5px;
-    min-height: 10px;
-    flex-grow: 1;
+    /* 修正: 使用絕對定位來避免影響父層高度 */
+    position: absolute;
+    bottom: 2px; 
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
 }
 
 .dot {
@@ -193,10 +197,13 @@ body {
 .dot.reading { background-color: var(--morandi-bg-reading); }
 
 /* ------------------ 浮動按鈕 (FAB) 樣式 ------------------ */
+/* 修正: 調整 FAB 位置，使其相對於 app-container 邊緣定位 */
 .fab-container {
     position: fixed;
     bottom: 40px;
-    right: 40px;
+    /* 關鍵修正：相對於 app-container 的 max-width 居中，然後再偏移 */
+    /* 這裡使用 right: 20px 仍然是相對於 viewport，在 max-width 內會是正確的 */
+    right: 20px; 
     z-index: 100;
 }
 
@@ -274,8 +281,8 @@ body {
     display: flex;
     align-items: center;
     border: none;
-    cursor: pointer; /* 為了編輯/刪除功能新增 */
-    transition: transform 0.1s, box-shadow 0.1s; /* 為了編輯/刪除功能新增 */
+    cursor: pointer; 
+    transition: transform 0.1s, box-shadow 0.1s; 
 }
 .summary-card:active {
     transform: scale(0.99);
@@ -318,6 +325,8 @@ body {
     margin-top: 2px;
 }
 
+/* style.css (在文件末尾或其他合適位置新增以下樣式) */
+
 /* --- 新增樣式: 每日總結標題佈局 --- */
 .summary-header {
     display: flex;
@@ -333,6 +342,7 @@ body {
     cursor: pointer;
     padding: 5px; /* 增加點擊區域 */
     transition: color 0.2s;
+    /* 確保它不會被當作日曆導航按鈕 */
 }
 
 #report-button:hover {
@@ -398,7 +408,8 @@ body {
 .modal-content input[type="number"],
 .modal-content input[type="text"],
 .modal-content select {
-    width: 100%; /* 確保在 box-sizing: border-box 下使用 100% 寬度 */
+    /* 修正: 確保輸入框在 border-box 模式下正確計算寬度 */
+    width: 100%; 
     padding: 12px 10px;
     margin-bottom: 15px;
     border: 1px solid var(--border-color);
@@ -420,6 +431,7 @@ body {
 
 .modal-content form input[type="text"],
 .modal-content form input[type="number"] {
+    /* 修正: 確保輸入框在 border-box 模式下正確計算寬度 */
     width: 100%;
     padding: 10px;
     margin-bottom: 15px;
@@ -485,6 +497,7 @@ body {
 .choice-group input[type="checkbox"]:checked + .choice-label {
     transform: scale(1.02); 
 }
+
 
 /* Modal 按鈕區域樣式 */
 .modal-buttons {
@@ -564,7 +577,7 @@ body {
     background-color: #FFEDED;
 }
 
-/* --- 每日總結標題佈局 --- */
+/* --- 新增樣式: 每日總結標題佈局 --- */
 .summary-header {
     display: flex;
     justify-content: space-between; /* 標題靠左，按鈕靠右 */
@@ -580,7 +593,7 @@ body {
     color: #333; /* 假設文字是深色 */
 }
 
-/* --- 圖標按鈕基礎樣式 --- */
+/* --- 新增樣式: 圖標按鈕基礎樣式 --- */
 .icon-button {
     background: none;
     border: none;
