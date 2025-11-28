@@ -1,5 +1,5 @@
 /* ---------------------------------------------------- */
-/* CSS 樣式區域 (style.css) - 已修正手機滿版及日曆溢出 */
+/* CSS 樣式區域 (style.css) - 已修正手機滿版及日曆間距一致性 */
 /* ---------------------------------------------------- */
 
 /* 全域 Box Model 修正：確保 padding 不會造成溢出 */
@@ -30,22 +30,22 @@
 /* ================================================================= */
 
 html, body {
-    height: 100%; /* 關鍵：確保 html 和 body 佔滿整個視埠高度 */
+    height: 100%; /* 確保 html 和 body 佔滿整個視埠高度 */
     margin: 0;
     padding: 0;
     font-family: var(--font-family);
-    background-color: #F8F8F8; /* 應用程式的底色 */
+    background-color: #F8F8F8; 
     color: var(--text-color-dark);
     overflow-x: hidden; /* 防止橫向滾動 */
 }
 
 #app-container {
     padding: 20px; 
-    max-width: 600px; /* 限制電腦螢幕上的最大寬度 */
+    max-width: 600px; 
     margin: 0 auto;
-    min-height: 100%; /* 關鍵：確保容器至少佔滿整個視埠高度 */
+    min-height: 100%; 
     display: flex;
-    flex-direction: column; /* 垂直佈局 */
+    flex-direction: column; 
 }
 
 /* ================================================================= */
@@ -56,7 +56,7 @@ html, body {
     flex-shrink: 0; 
     background-color: var(--background-color);
     border-radius: 12px;
-    /* 修正：將 padding 從 15px 縮減到 10px，釋放更多寬度 */
+    /* 修正：padding 縮減為 10px */
     padding: 10px; 
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     margin-bottom: 20px;
@@ -85,7 +85,7 @@ html, body {
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    /* 修正：將間距從 2px 進一步縮小至 1px，確保能完整顯示七個欄位 */
+    /* 修正：間距縮小至 1px */
     gap: 1px; 
     text-align: center;
 }
@@ -97,17 +97,24 @@ html, body {
 }
 
 .date-cell {
-    padding: 8px 0;
+    /* 修正：移除垂直 padding，改用固定高度和 padding-top 來控制佈局 */
+    /* padding: 8px 0; <-- 已移除 */
     border-radius: 8px;
     cursor: pointer;
     position: relative;
     font-weight: 500;
     transition: background-color 0.2s;
-    height: 30px; 
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
+    
+    /* 關鍵修正：增大高度以包含文字和指示點，確保間距固定 */
+    height: 38px; 
+    padding-top: 4px; /* 讓日期數字在視覺上置中偏上，為底部指示點留空間 */
+    text-align: center; /* 確保日期數字水平居中 */
+    
+    /* 移除 Flexbox，避免其與絕對定位的指示器產生潛在衝突 */
+    /* display: flex; */
+    /* flex-direction: column; */
+    /* justify-content: flex-start; */
+    /* align-items: center; */
 }
 
 .date-cell:empty {
@@ -144,7 +151,8 @@ html, body {
 
 .data-indicator {
     position: absolute;
-    bottom: 0px; /* 位於單元格底部 */
+    /* 由於 cell height 變為 38px，bottom: 0px 仍能正確定位 */
+    bottom: 0px; 
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -175,7 +183,7 @@ html, body {
     border-radius: 12px;
     padding: 20px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    margin-bottom: 80px; /* 為 FAB 騰出空間 */
+    margin-bottom: 80px; 
 }
 
 .summary-header {
