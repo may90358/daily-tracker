@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>個人生活追蹤日誌</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+<body>
+
+    <div id="app-container">
+
+        <div id="calendar-view">
+            <div class="calendar-header-nav">
+                <span id="prev-month" class="nav-icon material-icons">chevron_left</span>
+                <div class="calendar-header-title" id="current-month-year"></div>
+                <span id="next-month" class="nav-icon material-icons">chevron_right</span>
+            </div>
+            <div class="calendar-grid">
+                <div class="day-label">日</div>
+                <div class="day-label">一</div>
+                <div class="day-label">二</div>
+                <div class="day-label">三</div>
+                <div class="day-label">四</div>
+                <div class="day-label">五</div>
+                <div class="day-label">六</div>
+            </div>
+        </div>
+
+        <div id="daily-summary">
+            <div class="summary-header">
+                <div id="summary-title"></div>
+                <span id="report-button" class="nav-icon material-icons">bar_chart</span>
+            </div>
+            <div id="summary-content">
+            </div>
+        </div>
+
+    </div>
+
+    <div class="fab-container">
+        <div id="fab-button">+</div>
+        <div id="fab-menu">
+            <button id="fab-weight" data-type="weight">紀錄體重</button>
+            <button id="fab-water" data-type="water">紀錄飲水</button>
+            <button id="fab-sleep" data-type="sleep">紀錄睡眠</button>
+            <button id="fab-exercise" data-type="exercise">紀錄運動</button>
+            <button id="fab-reading" data-type="reading">紀錄閱讀</button>
+        </div>
+    </div>
+
+    <div id="record-modal" class="modal">
+        <div class="modal-content">
+            <h3 id="modal-title">新增紀錄</h3>
+            <form id="record-form">
+                <div id="modal-form-content">
+                </div>
+
+                <div class="modal-buttons">
+                    <button type="submit" class="save-btn" id="save-record-btn">儲存</button>
+                    <button type="button" class="cancel-btn" id="close-modal-btn">取消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="context-menu-modal" class="modal">
+        <div class="modal-content context-menu">
+        </div>
+    </div>
+
+    <script src="dataManager.js"></script>
+    <script src="main.js"></script>
+
+</body>
+</html>

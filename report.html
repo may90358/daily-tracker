@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>個人生活追蹤報表</title>
+    <link rel="stylesheet" href="style.css"> <link rel="stylesheet" href="report.css"> <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <script src="dataManager.js"></script>
+</head>
+<body>
+
+    <div id="report-container">
+        <div id="report-nav">
+            <span id="prev-month-report" class="nav-icon material-icons">chevron_left</span>
+            <div id="report-title"></div>
+            <span id="next-month-report" class="nav-icon material-icons">chevron_right</span>
+        </div>
+
+        <div id="report-content">
+
+            <div class="chart-card">
+                <h3>體重趨勢 (每日最新紀錄)</h3>
+                <canvas id="weightChart"></canvas>
+            </div>
+
+            <div class="chart-card">
+                <h3>飲水趨勢 (每日總量)</h3>
+                <canvas id="waterChart"></canvas>
+            </div>
+
+            <div class="chart-card">
+                <h3>每月睡眠品質分佈</h3>
+                <canvas id="sleepChart"></canvas>
+            </div>
+
+            <div class="stats-summary-container">
+
+                <div class="stat-card">
+                    <h4><span class="material-icons">directions_run</span> 每月運動日數</h4>
+                    <p id="exerciseDaysCount" class="stat-value"></p>
+                </div>
+
+                <div class="stat-card">
+                    <h4><span class="material-icons">book</span> 每月閱讀日數</h4>
+                    <p id="readingDaysCount" class="stat-value"></p>
+                </div>
+            </div>
+
+            <div class="list-card">
+                <h3>本月閱讀書單</h3>
+                <ul id="readingBookList">
+                    <li class="empty-placeholder">暫無閱讀紀錄</li>
+                </ul>
+            </div>
+
+            <div class="report-footer">
+                <button id="export-csv-button" class="action-button">匯出 CSV 報表 (Excel 可開啟)</button>
+                <a href="index.html" class="back-link">返回日誌</a>
+            </div>
+
+        </div>
+    </div>
+
+
+
+</div>
+
+    <script src="report.js"></script>
+</body>
+</html>

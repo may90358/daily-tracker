@@ -1,0 +1,137 @@
+/* =================================================================
+   報表專屬樣式 (report.css) - 應用莫蘭迪色系
+   ================================================================= */
+
+/* 假設的莫蘭迪色系變數 */
+:root {
+    --morandi-primary: #85A7C4;   /* 柔和藍 (取代原 primary-color) */
+    --morandi-text-dark: #4A4A4A; /* 深灰 */
+    --morandi-bg-light: #F4F4F4;  /* 淺灰背景 */
+    --morandi-border: #DCDCDC;   /* 柔和邊框 */
+    --morandi-card-bg: #FFFFFF;  /* 卡片背景 */
+
+    /* 輔助莫蘭迪色 */
+    --morandi-blue: #A2B9BC;
+    --morandi-green: #B5C4AE;
+    --morandi-yellow: #E0C793;
+    --morandi-red: #D29A9A;
+}
+
+#report-container {
+    padding: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* 導航列樣式 */
+#report-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--morandi-border);
+}
+
+#report-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--morandi-text-dark);
+}
+
+.nav-icon {
+    font-size: 30px;
+    color: var(--morandi-primary); /* 應用主題色 */
+    cursor: pointer;
+    padding: 5px;
+    transition: color 0.2s;
+}
+
+.nav-icon:hover {
+    color: var(--morandi-primary);
+    opacity: 0.8;
+}
+
+/* 圖表和列表卡片樣式 */
+.chart-card, .list-card, .stat-card {
+    background-color: var(--morandi-card-bg);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); /* 輕微陰影 */
+}
+
+.chart-card h3, .list-card h3 {
+    color: var(--morandi-primary); /* 應用主題色 */
+    margin-top: 0;
+    border-bottom: 1px solid var(--morandi-border);
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+/* 統計卡片 */
+.stat-card h4 {
+    color: var(--morandi-text-dark);
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--morandi-primary); /* 應用主題色 */
+}
+
+/* 閱讀書單列表 */
+#readingBookList li {
+    color: var(--morandi-text-dark);
+    border-bottom: 1px dashed #E5E5E5;
+}
+
+/* 返回連結 */
+.back-link {
+    color: var(--morandi-primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* RWD 調整 */
+@media (max-width: 600px) {
+    #report-container {
+        padding: 10px;
+    }
+    .stats-summary-container {
+        flex-direction: column;
+    }
+}
+
+/* report.css (在文件末尾或其他合適位置新增或修改) */
+
+/* ... (原有的 .report-footer 和 .back-link 樣式) ... */
+
+/* --- 匯出按鈕樣式 --- */
+.action-button {
+    padding: 12px 25px;
+    background-color: var(--morandi-primary); /* 使用莫蘭迪主題色 */
+    color: var(--morandi-card-bg); /* 白色文字 */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 10px auto 15px; /* 上下邊距和居中 */
+    display: block; /* 確保按鈕獨佔一行並居中 */
+    transition: background-color 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.action-button:hover {
+    /* 稍微加深顏色，保持柔和 */
+    background-color: #6D8FA9;
+}
+
+/* 調整 footer 佈局以容納按鈕和連結 */
+.report-footer {
+    text-align: center;
+    padding: 20px 0;
+    /* 確保連結和按鈕有足夠的空間 */
+}
