@@ -2,6 +2,11 @@
 /* CSS 樣式區域 (style.css) - 已修正手機滿版及日曆溢出 */
 /* ---------------------------------------------------- */
 
+/* 全域 Box Model 修正：確保 padding 不會造成溢出 */
+* {
+    box-sizing: border-box;
+}
+
 :root {
     /* 主色系 - 莫蘭迪色系 */
     --morandi-primary: #7BA7BE;     /* 莫蘭迪藍 (用於 FAB, 連結, 邊框) */
@@ -32,18 +37,15 @@ html, body {
     background-color: #F8F8F8; /* 應用程式的底色 */
     color: var(--text-color-dark);
     overflow-x: hidden; /* 防止橫向滾動 */
-    box-sizing: border-box;
 }
 
 #app-container {
-    /* 將原來的 padding 移到這裡，確保內容有邊距，但容器本身能滿高 */
     padding: 20px; 
     max-width: 600px; /* 限制電腦螢幕上的最大寬度 */
     margin: 0 auto;
     min-height: 100%; /* 關鍵：確保容器至少佔滿整個視埠高度 */
     display: flex;
     flex-direction: column; /* 垂直佈局 */
-    box-sizing: border-box;
 }
 
 /* ================================================================= */
@@ -51,10 +53,11 @@ html, body {
 /* ================================================================= */
 
 #calendar-view {
-    flex-shrink: 0; /* 確保日曆在內容增多時不被壓縮 */
+    flex-shrink: 0; 
     background-color: var(--background-color);
     border-radius: 12px;
-    padding: 15px;
+    /* 修正：將 padding 從 15px 縮減到 10px，釋放更多寬度 */
+    padding: 10px; 
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     margin-bottom: 20px;
 }
@@ -82,8 +85,8 @@ html, body {
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    /* 修正：將間距從 5px 縮小至 2px，以確保在窄小的手機螢幕上能滿版顯示 */
-    gap: 2px; 
+    /* 修正：將間距從 2px 進一步縮小至 1px，確保能完整顯示七個欄位 */
+    gap: 1px; 
     text-align: center;
 }
 
@@ -100,7 +103,7 @@ html, body {
     position: relative;
     font-weight: 500;
     transition: background-color 0.2s;
-    height: 30px; /* 固定高度讓網格更整齊 */
+    height: 30px; 
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -167,7 +170,7 @@ html, body {
 /* ================================================================= */
 
 #daily-summary {
-    flex-grow: 1; /* 關鍵：佔據日曆下方所有剩餘高度 */
+    flex-grow: 1; 
     background-color: var(--background-color);
     border-radius: 12px;
     padding: 20px;
