@@ -31,7 +31,7 @@ body {
     color: var(--text-color-dark);
     margin: 0;
     /* 修正: 讓 body 左右 padding 為 0，將 padding 移至 app-container */
-    padding: 0 0 80px; 
+    padding: 0 0 80px;
     max-width: none; /* 移除最大寬度限制 */
     margin-left: auto;
     margin-right: auto;
@@ -76,7 +76,7 @@ body {
 
 .nav-icon {
     cursor: pointer;
-    font-size: 24px !important; 
+    font-size: 24px !important;
     color: var(--text-color-dark);
     padding: 5px;
     border-radius: 50%;
@@ -88,7 +88,7 @@ body {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     /* 2. 關鍵修正：極限壓縮間距，確保滿版 */
-    gap: 1px; 
+    gap: 1px;
     text-align: center;
 }
 
@@ -108,15 +108,14 @@ body {
 .day-label:nth-child(7) { color: #34AADC; } /* 週六藍色 */
 
 .day-cell,
-.day-cell.inactive { 
+.day-cell.inactive {
     position: relative;
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 1 / 1.3;
     /* 樣式恢復: 使用原始的 padding 和高度 */
     /* 移除 display: flex, flex-direction, justify-content, align-items 回歸區塊佈局 */
-    padding: 8px 0; 
-    height: 30px; 
+    /* padding: 0px 0px; */
+    /* height: 50px; */
     text-align: center;
-    
     border-radius: 8px;
     font-size: 16px;
     font-weight: 500;
@@ -127,11 +126,11 @@ body {
 
 /* 確保日期的數字在頂部 */
 /* 由於已移除 flex，此選擇器可能需要調整或移除 */
-.day-cell > div:first-child { 
+.day-cell > div:first-child {
     font-size: 16px;
     font-weight: 500;
     /* 確保文字不會被 padding 影響太多 */
-    line-height: 1.2; 
+    line-height: 1.2;
 }
 
 /* ------------------- 今天日期樣式：背景透明 + 橘色外框 ------------------- */
@@ -139,8 +138,8 @@ body {
     background-color: transparent;
     border: 2px solid var(--highlight-color);
     border-radius: 8px;
-    padding: 5px 0; /* 調整 padding 配合 border */
-    height: 34px; /* 增加高度來容納 border */
+    /* padding: 5px 0; */ /* 調整 padding 配合 border */
+    height: 50px;
 }
 
 .day-cell.today div:first-child {
@@ -175,7 +174,7 @@ body {
     margin-top: 5px;
     /* 修正: 使用絕對定位來避免影響父層高度 */
     position: absolute;
-    bottom: 2px; 
+    top: 24px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 10;
@@ -202,7 +201,7 @@ body {
     bottom: 40px;
     /* 關鍵修正：相對於 app-container 的 max-width 居中，然後再偏移 */
     /* 這裡使用 right: 20px 仍然是相對於 viewport，在 max-width 內會是正確的 */
-    right: 20px; 
+    right: 20px;
     z-index: 100;
 }
 
@@ -280,8 +279,8 @@ body {
     display: flex;
     align-items: center;
     border: none;
-    cursor: pointer; 
-    transition: transform 0.1s, box-shadow 0.1s; 
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
 }
 .summary-card:active {
     transform: scale(0.99);
@@ -408,7 +407,7 @@ body {
 .modal-content input[type="text"],
 .modal-content select {
     /* 修正: 確保輸入框在 border-box 模式下正確計算寬度 */
-    width: 100%; 
+    width: 100%;
     padding: 12px 10px;
     margin-bottom: 15px;
     border: 1px solid var(--border-color);
@@ -437,7 +436,7 @@ body {
     border: 1px solid #ddd;
     border-radius: 8px;
     font-size: 1rem;
-    box-sizing: border-box; 
+    box-sizing: border-box;
 }
 
 /* =================================================================
@@ -452,9 +451,9 @@ body {
 
 /* 選擇組容器 */
 .choice-group {
-    display: flex; 
-    flex-wrap: wrap; 
-    gap: 10px; 
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
     margin-bottom: 15px;
 }
 
@@ -464,13 +463,13 @@ body {
     align-items: center;
     padding: 10px 15px;
     border: 1px solid #ccc;
-    border-radius: 20px; 
+    border-radius: 20px;
     cursor: pointer;
     font-size: 0.95rem;
     color: #444;
     background-color: #f8f8f8;
     transition: all 0.2s ease-in-out;
-    user-select: none; 
+    user-select: none;
 }
 
 /* 鼠標懸停效果 */
@@ -482,19 +481,19 @@ body {
 /* 選中狀態的 Label 樣式 */
 .choice-group input[type="radio"]:checked + .choice-label,
 .choice-group input[type="checkbox"]:checked + .choice-label {
-    background-color: #6a8dff; 
-    color: #fff; 
-    border-color: #6a8dff; 
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
+    background-color: #6a8dff;
+    color: #fff;
+    border-color: #6a8dff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 /* 可以為選中狀態添加一些更明顯的視覺效果，例如縮放 */
 .choice-group input[type="radio"]:checked + .choice-label {
-    transform: scale(1.02); 
+    transform: scale(1.02);
 }
 
 .choice-group input[type="checkbox"]:checked + .choice-label {
-    transform: scale(1.02); 
+    transform: scale(1.02);
 }
 
 
