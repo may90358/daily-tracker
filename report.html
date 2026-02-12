@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>個人生活追蹤報表</title>
-    <link rel="stylesheet" href="style.css"> <link rel="stylesheet" href="report.css"> <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="report.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
     <script src="dataManager.js"></script>
@@ -14,7 +16,7 @@
     <div id="report-container">
         <div id="report-nav">
             <span id="prev-month-report" class="nav-icon material-icons">chevron_left</span>
-            <div id="report-title"></div>
+            <div id="report-title">讀取中...</div>
             <span id="next-month-report" class="nav-icon material-icons">chevron_right</span>
         </div>
 
@@ -39,12 +41,17 @@
 
                 <div class="stat-card">
                     <h4><span class="material-icons">directions_run</span> 每月運動日數</h4>
-                    <p id="exerciseDaysCount" class="stat-value"></p>
+                    <p id="exerciseDaysCount" class="stat-value">0</p>
                 </div>
 
                 <div class="stat-card">
                     <h4><span class="material-icons">book</span> 每月閱讀日數</h4>
-                    <p id="readingDaysCount" class="stat-value"></p>
+                    <p id="readingDaysCount" class="stat-value">0</p>
+                </div>
+
+                <div class="stat-card">
+                    <h4><span class="material-icons">schedule</span> 累計閱讀時間</h4>
+                    <p id="totalReadingTime" class="stat-value">0 <span style="font-size: 1rem;">分鐘</span></p>
                 </div>
             </div>
 
@@ -62,10 +69,6 @@
 
         </div>
     </div>
-
-
-
-</div>
 
     <script src="report.js"></script>
 </body>
