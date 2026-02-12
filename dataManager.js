@@ -1,98 +1,105 @@
 // =================================================================
-// 數據管理層 (dataManager.js)
-// 負責所有數據的持久化、讀取、新增、更新和刪除。
-// 使用 localStorage 進行簡單的瀏覽器儲存。
+// 數據管理層 (dataManager.js) - 強化備份版本
 // =================================================================
 
-// 儲存在 localStorage 中的 key 名稱
 const STORAGE_KEY = 'dailyTrackerRecords';
+const BACKUP_CHECK_KEY = 'last_backup_month'; // 用來記錄上次提醒備份的月份
 
-/**
- * 獲取所有紀錄。
- * @returns {Array} - 紀錄列表。
- */
 function getRecords() {
     try {
         const records = localStorage.getItem(STORAGE_KEY);
         return records ? JSON.parse(records) : [];
     } catch (e) {
-        console.error("Error reading from localStorage", e);
+        console.error("讀取失敗", e);
         return [];
     }
 }
 
-/**
- * 將紀錄列表儲存到 localStorage。
- * @param {Array} records - 待儲存的紀錄列表。
- */
 function saveRecords(records) {
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+        checkAndNotifyBackup(); // 每次儲存後檢查是否需要備份
     } catch (e) {
-        console.error("Error writing to localStorage", e);
+        console.error("寫入失敗", e);
     }
 }
 
+// --- 備份核心功能 ---
+
 /**
- * 根據 ID 獲取單筆紀錄。
- * @param {number} id - 紀錄 ID。
- * @returns {Object|null} - 找到的紀錄物件或 null。
+ * 執行備份：下載所有的資料成 JSON 檔
  */
-function getRecordById(id) {
+function exportAllData() {
     const records = getRecords();
-    // 確保 id 是數字以便比對
-    return records.find(record => record.id === Number(id)) || null;
+    if (records.length === 0) {
+        alert("目前沒有資料可以備份喔！");
+        return;
+    }
+
+    const dataStr = JSON.stringify(records, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const now = new Date();
+    const fileName = `全資料備份_${now.getFullYear()}${now.getMonth() + 1}${now.getDate()}.json`;
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    
+    // 更新最後備份時間，避免重複提醒
+    localStorage.setItem(BACKUP_CHECK_KEY, now.getMonth().toString());
+    URL.revokeObjectURL(url);
 }
 
 /**
- * 新增一筆紀錄。
- * @param {Object} data - 紀錄數據 (不包含 id)。
+ * 檢查是否需要提醒備份 (每個月提醒一次)
  */
+function checkAndNotifyBackup() {
+    const now = new Date();
+    const currentMonth = now.getMonth().toString();
+    const lastBackupMonth = localStorage.getItem(BACKUP_CHECK_KEY);
+
+    // 如果這個月還沒備份過
+    if (lastBackupMonth !== currentMonth) {
+        // 使用 setTimeout 確保在頁面載入完成後才跳出
+        setTimeout(() => {
+            if (confirm(`【備份提醒】\n新的一個月開始了，建議備份目前的資料以防遺失。\n是否立即下載備份檔？`)) {
+                exportAllData();
+            } else {
+                // 如果使用者按取消，我們下週再提醒他（或是設定為已提醒）
+                localStorage.setItem(BACKUP_CHECK_KEY, currentMonth);
+            }
+        }, 2000);
+    }
+}
+
+// 基礎 CRUD 函式保持不變...
+function getRecordById(id) {
+    const records = getRecords();
+    return records.find(record => record.id === Number(id)) || null;
+}
+
 function saveNewRecord(data) {
     const records = getRecords();
-    // 生成新的 ID：找到最大 ID + 1，如果沒有紀錄則從 1 開始
-    const newId = records.length > 0
-        ? Math.max(...records.map(r => r.id)) + 1
-        : 1;
-
-    const newRecord = {
-        id: newId,
-        timestamp: Date.now(),
-        ...data
-    };
+    const newId = records.length > 0 ? Math.max(...records.map(r => r.id)) + 1 : 1;
+    const newRecord = { id: newId, timestamp: Date.now(), ...data };
     records.push(newRecord);
     saveRecords(records);
 }
 
-/**
- * 更新現有紀錄。
- * @param {number} id - 待更新紀錄的 ID。
- * @param {Object} newData - 新的數據。
- */
 function updateExistingRecord(id, newData) {
     const records = getRecords();
     const index = records.findIndex(record => record.id === Number(id));
-
     if (index !== -1) {
-        records[index] = {
-            ...records[index], // 保留舊的 ID 和 timestamp
-            ...newData         // 覆蓋新的數據 (date, type, value, unit)
-        };
+        records[index] = { ...records[index], ...newData };
         saveRecords(records);
     }
 }
 
-/**
- * 刪除一筆紀錄。
- * @param {number} id - 待刪除紀錄的 ID。
- */
 function deleteRecord(id) {
     let records = getRecords();
-    // 過濾掉與該 ID 不匹配的紀錄
     records = records.filter(record => record.id !== Number(id));
     saveRecords(records);
 }
-
-// 導出函數（雖然在瀏覽器腳本環境中非必須，但有利於組織）
-// 如果您是使用 <script> 標籤引入，這一步可以省略，函數會自動成為全域變數。
-// 如果無法執行，請確認它們是全域可用的。
