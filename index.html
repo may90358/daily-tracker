@@ -34,12 +34,19 @@
     <div class="header-actions" style="display: flex; gap: 15px; align-items: center;">
         <label for="csv-upload" class="nav-icon material-icons" style="cursor: pointer; color: #8E8E93; transition: color 0.2s;" title="匯入 CSV">cloud_upload</label>
         <input type="file" id="csv-upload" accept=".csv" style="display: none;">
-
         <span id="report-button" class="nav-icon material-icons" style="cursor: pointer; color: #8E8E93; transition: color 0.2s;" title="查看報表分析">bar_chart</span>
     </div>
 </div>
             <div id="summary-content">
             </div>
+
+            <div class="backup-section" style="padding: 15px; text-align: center; border-top: 1px solid #eee;">
+        <button id="backup-button" style="background: none; border: 1px solid #85A7C4; color: #85A7C4; padding: 8px 15px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; margin: 0 auto; font-size: 14px;">
+            <span class="material-icons" style="font-size: 18px; margin-right: 5px;">cloud_download</span>
+            備份完整資料 (JSON)
+        </button>
+    </div>
+</div>
         </div>
 
     </div>
