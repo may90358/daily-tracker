@@ -1,5 +1,5 @@
 // =================================================================
-// 應用程式核心邏輯 (main.js) - 最終修復版 (包含取消按鈕與完整表單邏輯)
+// 應用程式核心邏輯 (main.js) - 最終整合版 (含備份功能、圖卡優化、修復取消按鈕)
 // =================================================================
 
 // --- 全域變數 ---
@@ -23,7 +23,7 @@ const contextMenuContent = contextMenuModal ? contextMenuModal.querySelector('.m
 const reportButton = document.getElementById('report-button'); 
 
 // =================================================================
-// 1. 日曆渲染核心邏輯
+// 1. 日曆渲染核心
 // =================================================================
 
 function renderCalendar(date) {
@@ -32,6 +32,7 @@ function renderCalendar(date) {
 
     currentMonthYearEl.textContent = `${date.getFullYear()}年 ${date.getMonth() + 1}月`;
 
+    // 清除舊的日期格
     while (calendarGrid.children.length > 7) {
         calendarGrid.removeChild(calendarGrid.children[7]);
     }
@@ -44,12 +45,14 @@ function renderCalendar(date) {
     const records = getRecords();
     const recordsByDate = groupRecordsByDate(records);
 
+    // 填充空白
     for (let i = 0; i < firstDayOfMonth; i++) {
         const emptyCell = document.createElement('div');
         emptyCell.className = 'day-cell inactive';
         calendarGrid.appendChild(emptyCell);
     }
 
+    // 填充日期
     for (let day = 1; day <= daysInMonth; day++) {
         const dayCell = document.createElement('div');
         dayCell.className = 'day-cell';
@@ -66,6 +69,7 @@ function renderCalendar(date) {
         if (dateKey === todayKey) dayCell.classList.add('today');
         if (dateKey === selectedDateStr) dayCell.classList.add('selected');
 
+        // 渲染小圓點
         if (recordsByDate[dateKey]) {
             const dotsContainer = document.createElement('div');
             dotsContainer.className = 'record-dots';
@@ -102,7 +106,7 @@ function handleDayClick(event) {
 }
 
 // =================================================================
-// 2. 每日總結與圖卡去重顯示
+// 2. 每日總結渲染 (含圖卡去重：體重、睡眠只顯最新)
 // =================================================================
 
 function displayDailySummary(dateString) {
@@ -122,7 +126,7 @@ function displayDailySummary(dateString) {
 
         dailyRecords.forEach(record => {
             if (latestOnlyTypes.includes(record.type)) {
-                latestTracker[record.type] = record;
+                latestTracker[record.type] = record; // 只留最新的
             } else {
                 finalRecordsToShow.push(record);
             }
@@ -158,18 +162,13 @@ function getIconName(type) {
 }
 
 // =================================================================
-// 3. 表單彈窗邏輯
+// 3. 表單 Modal 彈窗與內容生成
 // =================================================================
 
 function openRecordModal(type) {
     recordForm.setAttribute('data-current-type', type);
     modalFormContent.innerHTML = generateFormHtml(type);
-    
-    const saveBtn = recordForm.querySelector('.save-btn');
-    saveBtn.setAttribute('data-mode', 'new');
-    saveBtn.removeAttribute('data-record-id');
     document.getElementById('modal-title').innerText = `新增${getCardTitle(type)}紀錄`;
-
     recordModal.style.display = 'flex';
     if (fabMenu) fabMenu.style.display = 'none';
 }
@@ -202,17 +201,9 @@ function generateFormHtml(type) {
     }
 }
 
-// =================================================================
-// 4. 資料儲存與 CSV 匯入
-// =================================================================
-
 function handleFormSubmit(e) {
     e.preventDefault();
     const type = recordForm.getAttribute('data-current-type');
-    const saveBtn = recordForm.querySelector('.save-btn');
-    const mode = saveBtn.getAttribute('data-mode') || 'new';
-    const recordId = saveBtn.getAttribute('data-record-id');
-
     let value = '', unit = '';
 
     if (type === 'weight') { value = document.getElementById('record-weight-value').value; unit = 'kg'; }
@@ -226,16 +217,14 @@ function handleFormSubmit(e) {
         unit = '本書';
     }
 
-    const newData = { date: selectedDateStr, type, value, unit };
-    if (mode === 'edit' && recordId) {
-        updateExistingRecord(recordId, newData);
-    } else {
-        saveNewRecord(newData);
-    }
-
+    saveNewRecord({ date: selectedDateStr, type, value, unit });
     closeRecordModal();
     renderCalendar(currentDate);
 }
+
+// =================================================================
+// 4. CSV 匯入與手動備份 (JSON)
+// =================================================================
 
 function handleCsvImport(event) {
     const file = event.target.files[0];
@@ -273,20 +262,18 @@ function handleCsvImport(event) {
             currentDate = new Date(2026, 0, 1);
             renderCalendar(currentDate); 
         }
-        event.target.value = '';
     };
     reader.readAsText(file);
 }
 
 // =================================================================
-// 5. 編輯與刪除邏輯
+// 5. 右鍵/點擊圖卡後的選單 (刪除功能)
 // =================================================================
 
 function openContextMenuModal(recordId, recordType) {
     if (!contextMenuContent) return;
     contextMenuContent.innerHTML = `
-        <button onclick="startEditRecord(${recordId})">編輯</button>
-        <button class="delete-btn" onclick="confirmDelete(${recordId}, '${getCardTitle(recordType)}')">刪除</button>
+        <button class="delete-btn" onclick="confirmDelete(${recordId}, '${getCardTitle(recordType)}')">刪除紀錄</button>
         <button onclick="closeContextMenuModal()">取消</button>`;
     contextMenuModal.style.display = 'flex';
 }
@@ -301,59 +288,53 @@ function confirmDelete(recordId, recordTitle) {
     }
 }
 
-function startEditRecord(recordId) {
-    const record = getRecordById(recordId);
-    if (!record) return;
-    closeContextMenuModal();
-    openRecordModal(record.type);
-    const saveBtn = recordForm.querySelector('.save-btn');
-    saveBtn.setAttribute('data-mode', 'edit');
-    saveBtn.setAttribute('data-record-id', recordId);
-    document.getElementById('modal-title').innerText = `編輯${getCardTitle(record.type)}紀錄`;
-
-    if (record.type === 'weight') document.getElementById('record-weight-value').value = record.value;
-    if (record.type === 'water') document.getElementById('record-water-value').value = record.value;
-    if (record.type === 'sleep') {
-        const rb = document.getElementById(`sleep-${record.value}`);
-        if (rb) rb.checked = true;
-    }
-    if (record.type === 'exercise') {
-        record.value.split(',').forEach(v => {
-            const cb = document.getElementById(`exercise-${v.trim()}`);
-            if (cb) cb.checked = true;
-        });
-    }
-    if (record.type === 'reading') {
-        const match = record.value.match(/(.*) \((\d+) 分鐘\)/);
-        if (match) {
-            document.getElementById('record-reading-title').value = match[1].trim();
-            document.getElementById('record-reading-time').value = match[2];
-        }
-    }
-}
-
 // =================================================================
-// 6. 初始化
+// 6. 初始化與事件綁定 (包含備份按鈕與取消按鈕修復)
 // =================================================================
 
 window.onload = function() {
     renderCalendar(currentDate);
 
+    // 月份切換按鈕
     document.getElementById('prev-month').onclick = () => { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(currentDate); };
     document.getElementById('next-month').onclick = () => { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(currentDate); };
     
+    // 報表按鈕
     if (reportButton) reportButton.onclick = () => window.open(`report.html?date=${selectedDateStr}`, '_blank');
     
+    // 備份按鈕 (手動下載全資料 JSON)
+    const backupBtn = document.getElementById('backup-button');
+    if (backupBtn) {
+        backupBtn.onclick = () => {
+            if (confirm('確定要現在下載全資料備份嗎？')) {
+                exportAllData(); 
+            }
+        };
+    }
+
+    // CSV 匯入 input
     const csvInput = document.getElementById('csv-upload');
     if (csvInput) csvInput.onchange = handleCsvImport;
 
+    // FAB 選單邏輯
     if (fabButton) fabButton.onclick = () => { if (fabMenu) fabMenu.style.display = fabMenu.style.display === 'block' ? 'none' : 'block'; };
-    if (fabMenu) fabMenu.querySelectorAll('button').forEach(btn => btn.onclick = (e) => openRecordModal(e.target.getAttribute('data-type')));
+    if (fabMenu) {
+        fabMenu.querySelectorAll('button').forEach(btn => {
+            btn.onclick = (e) => {
+                const type = e.currentTarget.getAttribute('data-type');
+                openRecordModal(type);
+            };
+        });
+    }
     
-    // 這裡修復了取消按鈕的問題：直接在 window.onload 綁定，不受 innerHTML 影響
-    document.getElementById('close-modal-btn').onclick = closeRecordModal;
+    // 彈出視窗：取消按鈕 (關鍵修復：在 onload 重新綁定)
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    if (closeModalBtn) closeModalBtn.onclick = closeRecordModal;
     
+    // 點擊 Modal 外部背景關閉
     if (recordModal) recordModal.onclick = (e) => { if (e.target === recordModal) closeRecordModal(); };
     if (contextMenuModal) contextMenuModal.onclick = (e) => { if (e.target === contextMenuModal) closeContextMenuModal(); };
+    
+    // 表單提交
     if (recordForm) recordForm.onsubmit = handleFormSubmit;
 };
