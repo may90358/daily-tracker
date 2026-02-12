@@ -1,9 +1,9 @@
 // =================================================================
-// 應用程式核心邏輯 (main.js) - 最終整合修正版
+// 應用程式核心邏輯 (main.js) - 最終修復版 (包含取消按鈕與完整表單邏輯)
 // =================================================================
 
 // --- 全域變數 ---
-let currentDate = new Date();
+let currentDate = new Date(); 
 const year = currentDate.getFullYear();
 const month = String(currentDate.getMonth() + 1).padStart(2, '0');
 const day = String(currentDate.getDate()).padStart(2, '0');
@@ -20,7 +20,7 @@ const fabMenu = document.getElementById('fab-menu');
 const recordForm = document.getElementById('record-form');
 const contextMenuModal = document.getElementById('context-menu-modal');
 const contextMenuContent = contextMenuModal ? contextMenuModal.querySelector('.modal-content.context-menu') : null;
-const reportButton = document.getElementById('report-button');
+const reportButton = document.getElementById('report-button'); 
 
 // =================================================================
 // 1. 日曆渲染核心邏輯
@@ -32,7 +32,6 @@ function renderCalendar(date) {
 
     currentMonthYearEl.textContent = `${date.getFullYear()}年 ${date.getMonth() + 1}月`;
 
-    // 清除舊的日期格
     while (calendarGrid.children.length > 7) {
         calendarGrid.removeChild(calendarGrid.children[7]);
     }
@@ -45,14 +44,12 @@ function renderCalendar(date) {
     const records = getRecords();
     const recordsByDate = groupRecordsByDate(records);
 
-    // 填充空白
     for (let i = 0; i < firstDayOfMonth; i++) {
         const emptyCell = document.createElement('div');
         emptyCell.className = 'day-cell inactive';
         calendarGrid.appendChild(emptyCell);
     }
 
-    // 填充日期
     for (let day = 1; day <= daysInMonth; day++) {
         const dayCell = document.createElement('div');
         dayCell.className = 'day-cell';
@@ -65,11 +62,10 @@ function renderCalendar(date) {
 
         const today = new Date();
         const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-
+        
         if (dateKey === todayKey) dayCell.classList.add('today');
         if (dateKey === selectedDateStr) dayCell.classList.add('selected');
 
-        // 顯示小圓點
         if (recordsByDate[dateKey]) {
             const dotsContainer = document.createElement('div');
             dotsContainer.className = 'record-dots';
@@ -126,7 +122,6 @@ function displayDailySummary(dateString) {
 
         dailyRecords.forEach(record => {
             if (latestOnlyTypes.includes(record.type)) {
-                // 體重與睡眠只保留當天最新的一筆
                 latestTracker[record.type] = record;
             } else {
                 finalRecordsToShow.push(record);
@@ -163,24 +158,13 @@ function getIconName(type) {
 }
 
 // =================================================================
-// 3. 表單彈窗與書名自動選單
+// 3. 表單彈窗邏輯
 // =================================================================
-
-function getUniqueBookTitles() {
-    const records = getRecords();
-    const titles = records
-        .filter(r => r.type === 'reading')
-        .map(r => {
-            const match = r.value.match(/^(.*?) \(/);
-            return match ? match[1].trim() : r.value.trim();
-        });
-    return [...new Set(titles)];
-}
 
 function openRecordModal(type) {
     recordForm.setAttribute('data-current-type', type);
     modalFormContent.innerHTML = generateFormHtml(type);
-
+    
     const saveBtn = recordForm.querySelector('.save-btn');
     saveBtn.setAttribute('data-mode', 'new');
     saveBtn.removeAttribute('data-record-id');
@@ -212,22 +196,14 @@ function generateFormHtml(type) {
             });
             return eHtml + '</div>';
         case 'reading':
-            const titles = getUniqueBookTitles();
-            let datalistHtml = '<datalist id="book-titles">';
-            titles.forEach(t => datalistHtml += `<option value="${t}">`);
-            datalistHtml += '</datalist>';
-            return `
-                <label>書名</label>
-                <input type="text" id="record-reading-title" list="book-titles" required placeholder="輸入或選擇書名">
-                ${datalistHtml}
-                <label>閱讀時間 (分鐘)</label>
-                <input type="number" id="record-reading-time" min="1" required>`;
+            return `<label>書名</label><input type="text" id="record-reading-title" required placeholder="書名">
+                    <label>閱讀時間 (分鐘)</label><input type="number" id="record-reading-time" min="1" required>`;
         default: return '';
     }
 }
 
 // =================================================================
-// 4. 資料儲存與 CSV 智慧匯入
+// 4. 資料儲存與 CSV 匯入
 // =================================================================
 
 function handleFormSubmit(e) {
@@ -251,7 +227,6 @@ function handleFormSubmit(e) {
     }
 
     const newData = { date: selectedDateStr, type, value, unit };
-
     if (mode === 'edit' && recordId) {
         updateExistingRecord(recordId, newData);
     } else {
@@ -270,48 +245,33 @@ function handleCsvImport(event) {
     reader.onload = function(e) {
         const text = e.target.result;
         const rows = text.split('\n');
-
         let records = getRecords();
         let lastId = records.length > 0 ? Math.max(...records.map(r => r.id)) : 0;
         let importCount = 0;
-
         const typeMap = { '體重': 'weight', '飲水': 'water', '睡眠': 'sleep', '運動': 'exercise', '閱讀': 'reading' };
 
         for (let i = 1; i < rows.length; i++) {
             const row = rows[i].trim();
             if (!row) continue;
             const columns = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-
             if (columns.length >= 4) {
                 const date = columns[1].trim();
                 const rawType = columns[2].trim().replace(/^"|"$/g, '');
                 const type = typeMap[rawType] || rawType;
-                let value = columns[3].trim().replace(/^"|"$/g, '');
+                let value = columns[3].trim().replace(/^"|"$/g, ''); 
                 const unit = columns[4] ? columns[4].trim().replace(/^"|"$/g, '') : '';
-
                 if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
                     lastId++;
-                    records.push({
-                        id: lastId,
-                        timestamp: Date.now() + importCount,
-                        date: date,
-                        type: type,
-                        value: value,
-                        unit: unit
-                    });
+                    records.push({ id: lastId, timestamp: Date.now() + importCount, date, type, value, unit });
                     importCount++;
                 }
             }
         }
-
         if (importCount > 0) {
             saveRecords(records);
             alert(`✅ 成功匯入 ${importCount} 筆紀錄！`);
-            // 自動跳轉至 1 月查看
             currentDate = new Date(2026, 0, 1);
-            renderCalendar(currentDate);
-        } else {
-            alert('匯入失敗：格式不正確。');
+            renderCalendar(currentDate); 
         }
         event.target.value = '';
     };
@@ -319,7 +279,7 @@ function handleCsvImport(event) {
 }
 
 // =================================================================
-// 5. 其他 UI 控制與初始化
+// 5. 編輯與刪除邏輯
 // =================================================================
 
 function openContextMenuModal(recordId, recordType) {
@@ -346,13 +306,11 @@ function startEditRecord(recordId) {
     if (!record) return;
     closeContextMenuModal();
     openRecordModal(record.type);
-
     const saveBtn = recordForm.querySelector('.save-btn');
     saveBtn.setAttribute('data-mode', 'edit');
     saveBtn.setAttribute('data-record-id', recordId);
     document.getElementById('modal-title').innerText = `編輯${getCardTitle(record.type)}紀錄`;
 
-    // 根據類型帶入數值
     if (record.type === 'weight') document.getElementById('record-weight-value').value = record.value;
     if (record.type === 'water') document.getElementById('record-water-value').value = record.value;
     if (record.type === 'sleep') {
@@ -374,19 +332,27 @@ function startEditRecord(recordId) {
     }
 }
 
+// =================================================================
+// 6. 初始化
+// =================================================================
+
 window.onload = function() {
     renderCalendar(currentDate);
 
     document.getElementById('prev-month').onclick = () => { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(currentDate); };
     document.getElementById('next-month').onclick = () => { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(currentDate); };
-
+    
     if (reportButton) reportButton.onclick = () => window.open(`report.html?date=${selectedDateStr}`, '_blank');
-
+    
     const csvInput = document.getElementById('csv-upload');
     if (csvInput) csvInput.onchange = handleCsvImport;
 
     if (fabButton) fabButton.onclick = () => { if (fabMenu) fabMenu.style.display = fabMenu.style.display === 'block' ? 'none' : 'block'; };
     if (fabMenu) fabMenu.querySelectorAll('button').forEach(btn => btn.onclick = (e) => openRecordModal(e.target.getAttribute('data-type')));
+    
+    // 這裡修復了取消按鈕的問題：直接在 window.onload 綁定，不受 innerHTML 影響
+    document.getElementById('close-modal-btn').onclick = closeRecordModal;
+    
     if (recordModal) recordModal.onclick = (e) => { if (e.target === recordModal) closeRecordModal(); };
     if (contextMenuModal) contextMenuModal.onclick = (e) => { if (e.target === contextMenuModal) closeContextMenuModal(); };
     if (recordForm) recordForm.onsubmit = handleFormSubmit;
